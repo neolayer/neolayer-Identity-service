@@ -40,6 +40,27 @@ CREATE DATABASE neolayer_identity;
 
 The service will start on `http://localhost:8080/api`
 
+## Swagger/OpenAPI Documentation
+
+Once the application is running, you can explore and test all APIs using Swagger UI:
+
+**Swagger UI:** http://localhost:8080/api/swagger-ui.html
+**API Docs:** http://localhost:8080/api/v3/api-docs
+
+### Features of Swagger UI:
+- 📋 Interactive API documentation
+- 🧪 Try-it-out functionality to test endpoints
+- 🔐 Built-in authentication support for Bearer tokens
+- 📝 Request/response examples
+- ✅ Input validation feedback
+
+### How to use Swagger UI:
+1. Open http://localhost:8080/api/swagger-ui.html
+2. Click "Authorize" button and paste your JWT token
+3. Expand any endpoint and click "Try it out"
+4. Enter parameters and execute requests
+5. View responses and headers
+
 ## API Endpoints
 
 ### Authentication

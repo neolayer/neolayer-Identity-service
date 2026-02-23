@@ -3,6 +3,12 @@ package com.neolayer.identity.controller;
 import com.neolayer.identity.dto.CreateOAuthClientRequest;
 import com.neolayer.identity.dto.OAuthClientResponse;
 import com.neolayer.identity.service.OAuthClientService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +24,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/oauth-clients")
+@Tag(name = "OAuth Clients", description = "OAuth Client ID and Secret management for applications")
+@SecurityRequirement(name = "Bearer Authentication")
 @RequiredArgsConstructor
 @Slf4j
 public class OAuthClientController {
@@ -25,12 +33,16 @@ public class OAuthClientController {
     private final OAuthClientService oauthClientService;
     private final UserRepository userRepository;
 
-    /**
-     * Create a new OAuth client
-     * Requires: authenticated user with project details
-     */
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Create OAuth Client",
+            description = "Generate a new OAuth client with unique ID and secret for your application. " +
+                    "Project details are required to identify the application.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "OAuth client created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public ResponseEntity<OAuthClientResponse> createOAuthClient(
             @Valid @RequestBody CreateOAuthClientRequest request,
             Authentication authentication) {
@@ -47,11 +59,14 @@ public class OAuthClientController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /**
-     * Get all OAuth clients for the authenticated user
-     */
     @GetMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "List OAuth Clients",
+            description = "Get all OAuth clients created by the authenticated user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of OAuth clients"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public ResponseEntity<List<OAuthClientResponse>> getOAuthClients(Authentication authentication) {
         log.info("Fetching OAuth clients for user");
 
@@ -64,13 +79,17 @@ public class OAuthClientController {
         return ResponseEntity.ok(clients);
     }
 
-    /**
-     * Get specific OAuth client by ID
-     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Get OAuth Client Details",
+            description = "Retrieve detailed information for a specific OAuth client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OAuth client details"),
+            @ApiResponse(responseCode = "404", description = "OAuth client not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public ResponseEntity<OAuthClientResponse> getOAuthClient(
-            @PathVariable Long id,
+            @PathVariable @Parameter(description = "OAuth Client ID") Long id,
             Authentication authentication) {
 
         log.info("Fetching OAuth client with id: {}", id);
@@ -84,13 +103,17 @@ public class OAuthClientController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Update OAuth client details
-     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Update OAuth Client",
+            description = "Update project details for an existing OAuth client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OAuth client updated successfully"),
+            @ApiResponse(responseCode = "404", description = "OAuth client not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public ResponseEntity<OAuthClientResponse> updateOAuthClient(
-            @PathVariable Long id,
+            @PathVariable @Parameter(description = "OAuth Client ID") Long id,
             @Valid @RequestBody CreateOAuthClientRequest request,
             Authentication authentication) {
 
@@ -105,14 +128,17 @@ public class OAuthClientController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Regenerate client secret
-     * WARNING: This will invalidate the old secret
-     */
     @PostMapping("/{id}/regenerate-secret")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Regenerate Client Secret",
+            description = "Generate a new client secret. WARNING: This will invalidate the old secret immediately!")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client secret regenerated successfully"),
+            @ApiResponse(responseCode = "404", description = "OAuth client not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public ResponseEntity<OAuthClientResponse> regenerateClientSecret(
-            @PathVariable Long id,
+            @PathVariable @Parameter(description = "OAuth Client ID") Long id,
             Authentication authentication) {
 
         log.info("Regenerating client secret for client id: {}", id);
@@ -126,13 +152,17 @@ public class OAuthClientController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Delete OAuth client
-     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @Operation(summary = "Delete OAuth Client",
+            description = "Remove an OAuth client. Applications using this client will no longer be authorized.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "OAuth client deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "OAuth client not found"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     public ResponseEntity<Void> deleteOAuthClient(
-            @PathVariable Long id,
+            @PathVariable @Parameter(description = "OAuth Client ID") Long id,
             Authentication authentication) {
 
         log.info("Deleting OAuth client with id: {}", id);
