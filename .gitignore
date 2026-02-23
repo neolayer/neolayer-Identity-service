@@ -1,0 +1,41 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+*.code-workspace
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### Maven ###
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.properties
+
+### Environment ###
+.env
+.env.local
+.env.*.local
+
+### Logs ###
+*.log
+logs/
+
+### System ###
+.DS_Store
+.AppleDouble
+.LSOverride

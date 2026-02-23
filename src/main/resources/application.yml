@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: neolayer-identity-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/neolayer_identity
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    root: INFO
+    com.neolayer: DEBUG
+
+jwt:
+  secret: neolayer-identity-service-secret-key-change-in-production
+  expiration: 86400000 # 24 hours in milliseconds
+  refresh-expiration: 604800000 # 7 days in milliseconds
