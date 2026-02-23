@@ -55,7 +55,77 @@ The service will start on `http://localhost:8080/api`
 - `PUT /api/users/{id}` - Update user
 - `DELETE /api/users/{id}` - Delete user (Admin only)
 
+### OAuth Clients (Requires Authentication)
+
+- `POST /api/oauth-clients` - Create new OAuth client
+- `GET /api/oauth-clients` - Get all OAuth clients for authenticated user
+- `GET /api/oauth-clients/{id}` - Get specific OAuth client
+- `PUT /api/oauth-clients/{id}` - Update OAuth client details
+- `POST /api/oauth-clients/{id}/regenerate-secret` - Regenerate client secret
+- `DELETE /api/oauth-clients/{id}` - Delete OAuth client
+
 ## Request/Response Examples
+
+### OAuth Client Creation
+
+Before creating an OAuth client, you need to:
+1. Register and login to get JWT token
+2. Call create OAuth client endpoint with project details
+
+**Step 1: Login to get Bearer Token**
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "SecurePassword123"
+  }'
+```
+
+Response includes `token` to use as Bearer token.
+
+**Step 2: Create OAuth Client**
+```bash
+curl -X POST http://localhost:8080/api/oauth-clients \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your-jwt-token>" \
+  -d '{
+    "projectName": "My Mobile App",
+    "projectDescription": "A mobile application for image processing",
+    "redirectUri": "https://myapp.com/callback",
+    "allowedScopes": "read,write,profile"
+  }'
+```
+
+Response (Client Secret shown only once):
+```json
+{
+  "id": 1,
+  "clientId": "client_ABC123XYZ",
+  "clientSecret": "eyJhbGciOiJIUzUxMiJ9XYZ",
+  "projectName": "My Mobile App",
+  "projectDescription": "A mobile application for image processing",
+  "redirectUri": "https://myapp.com/callback",
+  "allowedScopes": "read,write,profile",
+  "enabled": true,
+  "isConfidential": true,
+  "createdAt": "2024-02-23T10:30:00",
+  "updatedAt": "2024-02-23T10:30:00",
+  "lastUsed": null
+}
+```
+
+**Step 3: Retrieve OAuth Clients**
+```bash
+curl -X GET http://localhost:8080/api/oauth-clients \
+  -H "Authorization: Bearer <your-jwt-token>"
+```
+
+**Step 4: Regenerate Client Secret** (if compromised)
+```bash
+curl -X POST http://localhost:8080/api/oauth-clients/{id}/regenerate-secret \
+  -H "Authorization: Bearer <your-jwt-token>"
+```
 
 ### Register
 ```json
