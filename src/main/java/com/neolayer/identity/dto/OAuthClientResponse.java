@@ -14,7 +14,7 @@ public class OAuthClientResponse {
 
     private Long id;
     private String clientId;
-    private String clientSecret;
+    private String secretCode;
     private String projectName;
     private String projectDescription;
     private String redirectUri;

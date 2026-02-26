@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,20 +30,21 @@ public class OAuthClientService {
      * Generate a unique client ID
      */
     private String generateClientId() {
-        SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[16];
-        random.nextBytes(bytes);
-        return "client_" + Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        return UUID.randomUUID().toString();
     }
 
     /**
-     * Generate a client secret
+     * Generate a client secret as a lowercase hex string (32 bytes = 64 hex chars)
      */
     private String generateClientSecret() {
         SecureRandom random = new SecureRandom();
         byte[] bytes = new byte[32];
         random.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 
     /**
@@ -192,7 +193,7 @@ public class OAuthClientService {
         return OAuthClientResponse.builder()
                 .id(client.getId())
                 .clientId(client.getClientId())
-                .clientSecret(plainSecret != null ? plainSecret : "****")  // Only show plain secret on creation
+                .secretCode(plainSecret != null ? plainSecret : "****") // Only show plain secret on creation
                 .projectName(client.getProjectName())
                 .projectDescription(client.getProjectDescription())
                 .redirectUri(client.getRedirectUri())

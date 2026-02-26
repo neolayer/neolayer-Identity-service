@@ -3,10 +3,15 @@ spring:
     name: neolayer-identity-service
 
   datasource:
-    url: jdbc:mysql://localhost:3306/neolayer_identity
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:h2:mem:neolayer_identity
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
   jpa:
     hibernate:
@@ -14,7 +19,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
 
   jackson:

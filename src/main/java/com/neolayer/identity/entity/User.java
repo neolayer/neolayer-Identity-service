@@ -5,14 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "users")
 public class User {
@@ -39,47 +40,42 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String profilePicture;
 
-    @Column(nullable = false)
     @Builder.Default
+    @Column(nullable = false)
     private Boolean enabled = true;
 
-    @Column(nullable = false)
     @Builder.Default
+    @Column(nullable = false)
     private Boolean accountNonLocked = true;
 
-    @Column(nullable = false)
     @Builder.Default
+    @Column(nullable = false)
     private Boolean accountNonExpired = true;
 
-    @Column(nullable = false)
     @Builder.Default
+    @Column(nullable = false)
     private Boolean credentialsNonExpired = true;
 
-    @ManyToMany(fetch = jakarta.persistence.FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
     @Builder.Default
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    @Column(nullable = false, updatable = false)
     @Builder.Default
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(nullable = false)
     @Builder.Default
+    @Column(nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     private LocalDateTime lastLogin;
 
-    private String provider; // Google, GitHub, etc.
-    private String providerId; // Provider's user ID
+    private String provider;
+    private String providerId;
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
 }
